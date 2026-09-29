@@ -28,7 +28,7 @@
 <section id="logs" class="section"><div class="panel"><h3>Activity Logs</h3><div class="tableWrap"><table class="table"><thead><tr><th>Time</th><th>Action</th><th>Target</th><th>Details</th></tr></thead><tbody id="logsBody"></tbody></table></div></div></section>
 </div><div id="toast" class="toast"></div>
 <script>
-const API=location.origin;let secret=sessionStorage.getItem('nexora_admin_secret')||'';let users=[],selectedConv=null;
+const API='https://nexora-ai-backend-txnv.onrender.com';let secret=sessionStorage.getItem('nexora_admin_secret')||'';let users=[],selectedConv=null;
 const $=id=>document.getElementById(id);const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
 async function api(path,opt={}){const r=await fetch(API+path,{...opt,headers:{'Content-Type':'application/json','X-Admin-Secret':secret,...(opt.headers||{})}});const d=await r.json().catch(()=>({}));if(!r.ok||d.success===false)throw Error(d.message||'Request failed');return d}
