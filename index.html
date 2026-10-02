@@ -722,13 +722,45 @@ async function login(){
 function logout(){sessionStorage.removeItem("nexora_admin_secret");ADMIN_SECRET="";location.reload()}
 
 async function refreshAll(){
-  try{
-    const [dash,u,d,w,n,a,sc]=await Promise.all([
-      api("/api/admin/dashboard"),api("/api/admin/users"),api("/api/admin/deposits"),api("/api/admin/withdrawals"),api("/api/admin/nft-purchases"),api("/api/admin/analytics"),api("/api/admin/system-config")
-    ]);
-    state.stats=dash.stats||{};state.users=u.users||[];state.deposits=d.deposits||[];state.withdrawals=w.withdrawals||[];state.nft=n.purchases||n.nft_purchases||[];state.analytics=a.days||[];state.systemConfig=sc.config||{};
-    updateDashboard();renderCurrent();
-  }catch(e){toast(e.message)}
+  const requests = {
+    dashboard: api("/api/admin/dashboard"),
+    users: api("/api/admin/users"),
+    deposits: api("/api/admin/deposits"),
+    withdrawals: api("/api/admin/withdrawals"),
+    nft: api("/api/admin/nft-purchases"),
+    analytics: api("/api/admin/analytics"),
+    systemConfig: api("/api/admin/system-config")
+  };
+
+  const results = await Promise.allSettled(
+    Object.entries(requests).map(async ([key, promise]) => [key, await promise])
+  );
+
+  const errors = [];
+
+  for(const result of results){
+    if(result.status === "fulfilled"){
+      const [key, data] = result.value;
+
+      if(key === "dashboard") state.stats = data.stats || {};
+      if(key === "users") state.users = data.users || [];
+      if(key === "deposits") state.deposits = data.deposits || [];
+      if(key === "withdrawals") state.withdrawals = data.withdrawals || [];
+      if(key === "nft") state.nft = data.purchases || data.nft_purchases || [];
+      if(key === "analytics") state.analytics = data.days || [];
+      if(key === "systemConfig") state.systemConfig = data.config || {};
+    }else{
+      errors.push(result.reason?.message || "Admin API request failed");
+    }
+  }
+
+  updateDashboard();
+  renderCurrent();
+
+  if(errors.length){
+    toast("Some admin data could not be loaded.");
+    console.error("Admin API partial-load errors:", errors);
+  }
 }
 function updateDashboard(){
   const s=state.stats;
