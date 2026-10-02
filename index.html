@@ -396,6 +396,20 @@ tr:hover td{background:rgba(80,240,150,.025)}
   .commission-banner{grid-template-columns:repeat(2,1fr)}
   .login-card{padding:34px 22px}
 }
+
+.chart-grid-pro{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0}
+.analytics-card{min-height:300px;overflow:hidden}
+.pro-chart{height:205px;display:flex;align-items:flex-end;gap:6px;padding:18px 12px 8px;border-top:1px solid var(--line);overflow-x:auto;background:linear-gradient(180deg,rgba(20,255,140,.025),transparent)}
+.pro-bar-wrap{height:100%;min-width:34px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;cursor:pointer;position:relative}
+.pro-bar-wrap:hover .pro-bar,.pro-bar-wrap.selected .pro-bar{filter:brightness(1.35);box-shadow:0 0 18px rgba(220,190,90,.38)}
+.pro-bar{width:20px;min-height:4px;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,#e5c96d,#7c9f62 55%,#124b31);border:1px solid rgba(230,205,110,.35);transition:.18s}
+.pro-date{font-size:8px;color:#759585;white-space:nowrap;transform:rotate(-35deg);transform-origin:center top;margin-top:4px}
+.chart-info{margin:0 12px 12px;padding:10px 12px;border:1px solid rgba(220,190,90,.18);border-radius:10px;background:#061a10;color:#88a996;font-size:10px;min-height:34px}
+.chart-info strong{color:#e5c96d}
+.chart-range{min-width:96px;padding:6px 8px;border:1px solid rgba(220,190,90,.22);border-radius:8px;background:#071b11;color:#d9eadf;font-size:10px;font-weight:700;outline:none}.chart-range:focus{border-color:rgba(220,190,90,.55);box-shadow:0 0 0 2px rgba(220,190,90,.08)}
+.analytics-card .card-head{gap:8px;flex-wrap:wrap}.analytics-card .card-head h3{flex:1;min-width:180px}
+@media(max-width:900px){.chart-grid-pro{grid-template-columns:1fr}.pro-chart{height:185px}}
+
 </style>
 </head>
 <body>
@@ -459,42 +473,27 @@ tr:hover td{background:rgba(80,240,150,.025)}
   <main class="main">
     <!-- DASHBOARD -->
     <section id="view-dashboard" class="view active">
-      <div class="page-head">
-        <div><div class="page-kicker">NEXORA AI • COMMAND CENTER</div><h1 class="page-title">System Overview</h1><p class="page-sub">Real-time platform intelligence, liquidity and earning visibility.</p></div>
-        <div class="head-actions"><button class="btn green" id="refreshAll">↻ Refresh All</button></div>
-      </div>
+      <div class="page-head"><div><div class="page-kicker">NEXORA AI CONTROL CENTER</div><h1 class="page-title">Executive Dashboard</h1><p class="page-sub">Live operational intelligence for users, treasury, NFT activity, referral revenue and liquidity.</p></div><div class="head-actions"><button class="btn green" id="dashboardRefresh">↻ Refresh All</button></div></div>
       <div class="kpi-grid">
-        <div class="kpi"><div class="kpi-label">TOTAL USERS</div><div id="kUsers" class="kpi-value green">—</div><div class="kpi-note">Registered accounts</div></div>
-        <div class="kpi"><div class="kpi-label">TOTAL BALANCE</div><div id="kBalance" class="kpi-value gold">—</div><div class="kpi-note">Current user liability</div></div>
-        <div class="kpi"><div class="kpi-label">TOTAL DEPOSITS</div><div id="kDeposits" class="kpi-value gold">—</div><div class="kpi-note">Verified deposit volume</div></div>
+        <div class="kpi"><div class="kpi-label">USERS</div><div id="kUsers" class="kpi-value">—</div><div class="kpi-note">Registered accounts</div></div>
+        <div class="kpi"><div class="kpi-label">TOTAL BALANCE</div><div id="kBalance" class="kpi-value">—</div><div class="kpi-note">Current user balances</div></div>
+        <div class="kpi"><div class="kpi-label">VERIFIED DEPOSITS</div><div id="kDeposits" class="kpi-value gold">—</div><div class="kpi-note">Verified treasury inflow</div></div>
         <div class="kpi"><div class="kpi-label">PENDING WITHDRAWALS</div><div id="kPendingW" class="kpi-value">—</div><div class="kpi-note">Needs review</div></div>
         <div class="kpi"><div class="kpi-label">NFT PURCHASES</div><div id="kNFT" class="kpi-value green">—</div><div class="kpi-note">Active + historical</div></div>
       </div>
+      <div class="chart-grid-pro">
+        <div class="card analytics-card"><div class="card-head"><h3>Users — Daily Registrations</h3><select class="chart-range" data-chart="users" aria-label="Users chart range"><option value="1d">1 Day</option><option value="7d">1 Week</option><option value="30d" selected>1 Month</option><option value="90d">3 Months</option><option value="180d">6 Months</option><option value="365d">1 Year</option></select></div><div id="usersChart" class="pro-chart"></div><div id="usersChartInfo" class="chart-info">Tap a date bar to inspect the exact date and user count.</div></div>
+        <div class="card analytics-card"><div class="card-head"><h3>Deposits — Daily Verified Amount</h3><select class="chart-range" data-chart="deposits" aria-label="Deposits chart range"><option value="1d">1 Day</option><option value="7d">1 Week</option><option value="30d" selected>1 Month</option><option value="90d">3 Months</option><option value="180d">6 Months</option><option value="365d">1 Year</option></select></div><div id="depositsChart" class="pro-chart"></div><div id="depositsChartInfo" class="chart-info">Tap a date bar to inspect date, count and verified amount.</div></div>
+        <div class="card analytics-card"><div class="card-head"><h3>Withdrawals — Daily Paid Amount</h3><select class="chart-range" data-chart="withdrawals" aria-label="Withdrawals chart range"><option value="1d">1 Day</option><option value="7d">1 Week</option><option value="30d" selected>1 Month</option><option value="90d">3 Months</option><option value="180d">6 Months</option><option value="365d">1 Year</option></select></div><div id="withdrawalsChart" class="pro-chart"></div><div id="withdrawalsChartInfo" class="chart-info">Tap a date bar to inspect date, count and completed payouts.</div></div>
+        <div class="card analytics-card"><div class="card-head"><h3>NFT Purchases — Daily Sales</h3><select class="chart-range" data-chart="nft" aria-label="NFT purchases chart range"><option value="1d">1 Day</option><option value="7d">1 Week</option><option value="30d" selected>1 Month</option><option value="90d">3 Months</option><option value="180d">6 Months</option><option value="365d">1 Year</option></select></div><div id="nftChart" class="pro-chart"></div><div id="nftChartInfo" class="chart-info">Tap a date bar to inspect date, purchases and sales.</div></div>
+        <div class="card analytics-card"><div class="card-head"><h3>Referral NFT Commission — Daily 5%</h3><select class="chart-range" data-chart="commission" aria-label="Commission chart range"><option value="1d">1 Day</option><option value="7d">1 Week</option><option value="30d" selected>1 Month</option><option value="90d">3 Months</option><option value="180d">6 Months</option><option value="365d">1 Year</option></select></div><div id="commissionChart" class="pro-chart"></div><div id="commissionChartInfo" class="chart-info">Tap a date bar to inspect date, events and commission credited.</div></div>
+        <div class="card analytics-card"><div class="card-head"><h3>NFT Earning Liability — Daily Run Rate</h3><select class="chart-range" data-chart="earning" aria-label="Earning chart range"><option value="1d">1 Day</option><option value="7d">1 Week</option><option value="30d" selected>1 Month</option><option value="90d">3 Months</option><option value="180d">6 Months</option><option value="365d">1 Year</option></select></div><div id="earningChart" class="pro-chart"></div><div id="earningChartInfo" class="chart-info">Tap a date bar to inspect NFT daily earning run rate.</div></div>
+      </div>
       <div class="dashboard-grid">
-        <div class="card">
-          <div class="card-head"><h3>14-Day Platform Activity</h3><span id="chartStatus" class="badge blue">Live</span></div>
-          <div class="card-body"><div id="activityChart" class="chart"></div></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><h3>24-Hour NFT Earning Liability</h3><span class="badge gold">Forecast</span></div>
-          <div class="card-body">
-            <div class="forecast-main"><strong id="dashForecast">0.00 USDT</strong><span>Estimated NFT earning due over the next 24 hours</span></div>
-            <div class="mini-grid">
-              <div class="mini-stat"><span>ACTIVE NFTS</span><b id="dashActiveNFT">0</b></div>
-              <div class="mini-stat"><span>COMPLETED NFTS</span><b id="dashCompletedNFT">0</b></div>
-              <div class="mini-stat"><span>5% COMMISSION</span><b id="dashCommission">0.00 USDT</b></div>
-              <div class="mini-stat"><span>TOTAL EARNED</span><b id="dashEarned">0.00 USDT</b></div>
-            </div>
-            <div class="alert">Use this forecast for withdrawal-liquidity planning. It is calculated from active NFT daily earning records currently available to the admin.</div>
-          </div>
-        </div>
+        <div class="card"><div class="card-head"><h3>24-Hour NFT Earning Liability</h3><span class="badge gold">Forecast</span></div><div class="card-body"><div class="forecast-main"><strong id="dashForecast">0.00 USDT</strong><span>Estimated NFT earning due over the next 24 hours</span></div><div class="mini-grid"><div class="mini-stat"><span>ACTIVE NFTS</span><b id="dashActiveNFT">0</b></div><div class="mini-stat"><span>COMPLETED NFTS</span><b id="dashCompletedNFT">0</b></div><div class="mini-stat"><span>5% COMMISSION</span><b id="dashCommission">0.00 USDT</b></div><div class="mini-stat"><span>TOTAL EARNED</span><b id="dashEarned">0.00 USDT</b></div></div><div class="alert">Use this forecast for withdrawal-liquidity planning.</div></div></div>
+        <div class="card"><div class="card-head"><h3>Automation Status</h3><span class="badge green">Monitor</span></div><div id="automationSummary" class="card-body"><div class="empty">Loading automation status...</div></div></div>
       </div>
-      <div class="quick-grid">
-        <button class="quick" data-go="users"><strong>Find User</strong><span>Search by Telegram ID, username or name</span></button>
-        <button class="quick" data-go="commission"><strong>Referral Commission</strong><span>See every NFT purchase that generated 5%</span></button>
-        <button class="quick" data-go="withdrawals"><strong>Withdrawal Queue</strong><span>Review pending payouts and actions</span></button>
-        <button class="quick" data-go="support"><strong>Support Inbox</strong><span>Read and reply to Help Team conversations</span></button>
-      </div>
+      <div class="quick-grid"><button class="quick" data-go="users"><strong>Find User</strong><span>Search by Telegram ID, username or name</span></button><button class="quick" data-go="commission"><strong>Referral Commission</strong><span>See every NFT purchase that generated 5%</span></button><button class="quick" data-go="withdrawals"><strong>Withdrawal Queue</strong><span>Review pending payouts and actions</span></button><button class="quick" data-go="support"><strong>Support Inbox</strong><span>Read and reply to Help Team conversations</span></button></div>
     </section>
 
     <!-- USERS -->
@@ -662,7 +661,7 @@ tr:hover td{background:rgba(80,240,150,.025)}
 const API_BASE="https://nexora-ai-backend-txnv.onrender.com";
 let ADMIN_SECRET=sessionStorage.getItem("nexora_admin_secret")||"";
 let state={
-  stats:{},users:[],deposits:[],withdrawals:[],nft:[],logs:[],settings:[],unmatched:[],
+  stats:{},analytics:[],users:[],deposits:[],withdrawals:[],nft:[],logs:[],settings:[],unmatched:[],systemConfig:{},
   conversations:[],activeConversation:null
 };
 
@@ -724,10 +723,10 @@ function logout(){sessionStorage.removeItem("nexora_admin_secret");ADMIN_SECRET=
 
 async function refreshAll(){
   try{
-    const [dash,u,d,w,n]=await Promise.all([
-      api("/api/admin/dashboard"),api("/api/admin/users"),api("/api/admin/deposits"),api("/api/admin/withdrawals"),api("/api/admin/nft-purchases")
+    const [dash,u,d,w,n,a,sc]=await Promise.all([
+      api("/api/admin/dashboard"),api("/api/admin/users"),api("/api/admin/deposits"),api("/api/admin/withdrawals"),api("/api/admin/nft-purchases"),api("/api/admin/analytics"),api("/api/admin/system-config")
     ]);
-    state.stats=dash.stats||{};state.users=u.users||[];state.deposits=d.deposits||[];state.withdrawals=w.withdrawals||[];state.nft=n.purchases||n.nft_purchases||[];
+    state.stats=dash.stats||{};state.users=u.users||[];state.deposits=d.deposits||[];state.withdrawals=w.withdrawals||[];state.nft=n.purchases||n.nft_purchases||[];state.analytics=a.days||[];state.systemConfig=sc.config||{};
     updateDashboard();renderCurrent();
   }catch(e){toast(e.message)}
 }
@@ -746,21 +745,39 @@ function updateDashboard(){
   $("dashForecast").textContent=money(forecast);$("dashActiveNFT").textContent=active.length;
   $("dashCompletedNFT").textContent=state.nft.filter(x=>x.status==="completed").length;
   $("dashCommission").textContent=money(commission);$("dashEarned").textContent=money(earned);
-  renderActivityChart();
+  renderActivityCharts();
 }
-function renderActivityChart(){
-  const days=Array.from({length:14},(_,i)=>{
-    const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(13-i));
-    const key=d.toDateString();
-    const users=state.users.filter(x=>new Date(x.created_at||0).toDateString()===key).length;
-    const dep=state.deposits.filter(x=>new Date(x.created_at||0).toDateString()===key).length;
-    const wd=state.withdrawals.filter(x=>new Date(x.created_at||0).toDateString()===key).length;
-    const nft=state.nft.filter(x=>new Date(x.purchased_at||0).toDateString()===key).length;
-    return {d,users,dep,wd,nft,total:users+dep+wd+nft};
+function chartSeries(){
+  const days=state.analytics.length?state.analytics:Array.from({length:365},(_,i)=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(364-i));return {day:d.toISOString().slice(0,10),users:0,deposits:0,deposits_amount:0,withdrawals:0,withdrawals_amount:0,nft_purchases:0,nft_sales:0};});
+  return days.map(x=>{const day=String(x.day).slice(0,10);let commission=0,earning=0;state.nft.filter(n=>String(n.purchased_at||n.created_at||'').slice(0,10)===day).forEach(n=>{commission+=Number(n.referral_commission||0);earning+=Number(n.daily_earning||0)});return {...x,commission,earning}});
+}
+const chartRanges={users:'30d',deposits:'30d',withdrawals:'30d',nft:'30d',commission:'30d',earning:'30d'};
+const chartRangeDays={ '1d':1, '7d':7, '30d':30, '90d':90, '180d':180, '365d':365 };
+function rangeLabel(key){return ({'1d':'1 Day','7d':'1 Week','30d':'1 Month','90d':'3 Months','180d':'6 Months','365d':'1 Year'})[key]||'1 Month'}
+function rowsForRange(rows,key){const n=chartRangeDays[key]||30;return rows.slice(-n)}
+function drawProChart(id,infoId,rows,valueKey,formatter,label){
+  const box=$(id),info=$(infoId);if(!box)return;const max=Math.max(1,...rows.map(r=>Number(r[valueKey]||0)));
+  const barWidth=rows.length>90?16:rows.length>30?22:30;
+  box.innerHTML=rows.map((r,i)=>{const value=Number(r[valueKey]||0),pct=Math.max(3,value/max*92),dateLabel=new Date(r.day+'T00:00:00').toLocaleDateString(undefined,{day:'2-digit',month:'short'});return `<div class="pro-bar-wrap" data-index="${i}" style="min-width:${barWidth}px" title="${dateLabel}: ${formatter(value)}"><div class="pro-bar" style="height:${pct}%"></div><div class="pro-date">${dateLabel}</div></div>`}).join('');
+  box.querySelectorAll('.pro-bar-wrap').forEach(el=>el.addEventListener('click',()=>{box.querySelectorAll('.pro-bar-wrap').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');const r=rows[Number(el.dataset.index)];const date=new Date(r.day+'T00:00:00').toLocaleDateString(undefined,{weekday:'short',day:'2-digit',month:'long',year:'numeric'});info.innerHTML=`<strong>${esc(date)}</strong> · ${esc(label)}: <strong>${esc(formatter(Number(r[valueKey]||0)))}</strong>`;}));
+}
+function renderActivityCharts(){
+  const rows=chartSeries();
+  drawProChart('usersChart','usersChartInfo',rowsForRange(rows,chartRanges.users),'users',v=>String(v),'Users registered');
+  drawProChart('depositsChart','depositsChartInfo',rowsForRange(rows,chartRanges.deposits),'deposits_amount',v=>money(v), 'Verified deposits');
+  drawProChart('withdrawalsChart','withdrawalsChartInfo',rowsForRange(rows,chartRanges.withdrawals),'withdrawals_amount',v=>money(v), 'Completed withdrawals');
+  drawProChart('nftChart','nftChartInfo',rowsForRange(rows,chartRanges.nft),'nft_sales',v=>money(v), 'NFT sales');
+  drawProChart('commissionChart','commissionChartInfo',rowsForRange(rows,chartRanges.commission),'commission',v=>money(v), 'Referral commission');
+  drawProChart('earningChart','earningChartInfo',rowsForRange(rows,chartRanges.earning),'earning',v=>money(v), 'NFT daily earning run rate');
+  const c=state.systemConfig||{};if($('automationSummary'))$('automationSummary').innerHTML=`<div class="mini-grid"><div class="mini-stat"><span>AUTO DEPOSIT</span><b>${c.auto_deposit_monitor?'ONLINE':'CHECK CONFIG'}</b></div><div class="mini-stat"><span>CONFIRMATIONS</span><b>${esc(c.deposit_confirmations??'—')}</b></div><div class="mini-stat"><span>WITHDRAWAL SENDER</span><b>${c.withdrawal_sender_configured?'READY':'NOT READY'}</b></div><div class="mini-stat"><span>CHAIN</span><b>${esc(c.chain??'BSC')}</b></div></div>`;
+}
+function initChartRangeControls(){
+  document.querySelectorAll('.chart-range').forEach(sel=>{
+    const key=sel.dataset.chart;sel.value=chartRanges[key]||'30d';
+    sel.addEventListener('change',()=>{chartRanges[key]=sel.value;renderActivityCharts();});
   });
-  const max=Math.max(1,...days.map(x=>x.total));
-  $("activityChart").innerHTML=days.map(x=>`<div class="bar-wrap"><div class="bar" title="${x.total} activity" style="height:${Math.max(3,x.total/max*90)}%"></div><div class="bar-label">${x.d.getDate()}/${x.d.getMonth()+1}</div></div>`).join("");
 }
+
 function renderCurrent(){
   const active=document.querySelector(".view.active")?.id?.replace("view-","");
   if(active==="dashboard")updateDashboard();if(active==="users")renderUsers();if(active==="deposits")renderDeposits();if(active==="withdrawals")renderWithdrawals();if(active==="nft")renderNFT();if(active==="commission")renderCommission();if(active==="forecast")renderForecast();if(active==="security")renderSecurity();if(active==="logs")renderLogs();
@@ -967,8 +984,12 @@ async function loadSettings(){
   try{const d=await api("/api/admin/settings");state.settings=d.settings||[];renderSettings()}catch(e){$("settingsGrid").innerHTML=`<div class="empty">${esc(e.message)}</div>`}
 }
 function renderSettings(){
-  if(!state.settings.length){$("settingsGrid").innerHTML='<div class="empty">No admin settings stored yet.</div>';return}
-  $("settingsGrid").innerHTML=state.settings.map((s,i)=>`<div class="setting"><label>${esc(s.key)}</label><input data-setting="${esc(s.key)}" value="${esc(s.value)}"><small>Updated: ${date(s.updated_at)}</small></div>`).join("");
+  const c=state.systemConfig||{};
+  const rows=state.settings||[];
+  $("settingsGrid").innerHTML=`<div class="setting"><label>Dashboard Auto Refresh (seconds)</label><input id="uiRefreshSeconds" type="number" min="15" max="300" value="${esc(localStorage.getItem('nexora_refresh_seconds')||'30')}"><small>Frontend-only refresh preference. Does not change blockchain automation.</small></div><div class="setting"><label>Analytics Range</label><input value="1 Day → 1 Year" disabled><small>Charts support 1 Day, 1 Week, 1 Month, 3 Months, 6 Months and 1 Year using daily data.</small></div><div class="setting"><label>Automatic BEP-20 Deposit Monitor</label><input value="${c.auto_deposit_monitor?'ACTIVE':'NOT CONFIGURED'}" disabled><small>Reads backend blockchain-monitor configuration; no private credentials are exposed here.</small></div><div class="setting"><label>Deposit Confirmations Required</label><input value="${esc(c.deposit_confirmations??'—')}" disabled><small>Automatic credit occurs after the configured confirmation count.</small></div><div class="setting"><label>Deposit Poll Interval</label><input value="${esc(c.deposit_poll_interval_ms??'—')} ms" disabled><small>Backend blockchain scanner interval.</small></div><div class="setting"><label>Withdrawal Sender Wallet</label><input value="${c.withdrawal_sender_configured?'CONFIGURED':'NOT CONFIGURED'}" disabled><small>Private key is never displayed. Approve & Send uses the backend sender wallet.</small></div><div class="setting"><label>Withdrawal Confirmations</label><input value="${esc(c.withdrawal_confirmations??'—')}" disabled><small>Blockchain confirmations waited for after payout transaction.</small></div><div class="setting"><label>BSC USDT Contract</label><input value="${esc(c.usdt_contract||'—')}" disabled><small>Configured BEP-20 USDT contract address.</small></div>`;
+}
+async function saveSettings(){
+  const sec=Math.max(15,Math.min(300,Number($("uiRefreshSeconds")?.value||30)));localStorage.setItem('nexora_refresh_seconds',String(sec));toast('Admin dashboard preference saved');
 }
 async function saveSettings(){
   const entries={};document.querySelectorAll("[data-setting]").forEach(i=>entries[i.dataset.setting]=i.value);
@@ -1034,6 +1055,7 @@ if(ADMIN_SECRET){
     $("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");await refreshAll();
   }).catch(()=>{sessionStorage.removeItem("nexora_admin_secret");ADMIN_SECRET=""});
 }
+document.addEventListener("DOMContentLoaded",()=>initChartRangeControls());
 </script>
 </body>
 </html>
