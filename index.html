@@ -1012,7 +1012,7 @@ function closeModal(){$("modal").classList.remove("show")}
 /* EVENT WIRING */
 $("menuBtn").onclick=openDrawer;$("drawerClose").onclick=closeDrawer;$("overlay").onclick=closeDrawer;$("logoutBtn").onclick=logout;
 $("loginBtn").onclick=login;$("secretInput").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
-$("refreshAll").onclick=refreshAll;$("sendReply").onclick=sendReply;$("saveSettings").onclick=saveSettings;$("healthRefresh").onclick=healthCheck;
+$("sendReply").onclick=sendReply;$("saveSettings").onclick=saveSettings;$("healthRefresh").onclick=healthCheck;
 document.querySelectorAll(".menu-item").forEach(b=>b.onclick=()=>go(b.dataset.view));
 document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
 document.querySelectorAll("[data-refresh]").forEach(b=>b.onclick=async()=>{
