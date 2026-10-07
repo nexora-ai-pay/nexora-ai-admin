@@ -1004,10 +1004,28 @@ function renderUnmatched(){
   let rows=state.unmatched.filter(x=>!search||JSON.stringify(x).toLowerCase().includes(search));
   rows.sort((a,b)=>sort==="amount"?Number(b.amount||0)-Number(a.amount||0):new Date(b.created_at||0)-new Date(a.created_at||0));
   if(!rows.length){$("unmatchedTable").innerHTML='<div class="empty">No unresolved unmatched deposits.</div>';return}
-  $("unmatchedTable").innerHTML=`<table><thead><tr><th>Date</th><th>TX Hash</th><th>From</th><th>Amount</th><th>Block</th><th>Reason</th><th>Action</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${date(x.created_at)}</td><td class="mono">${esc(x.tx_hash||x.txHash||"—")}</td><td class="mono">${esc(x.from_address||x.from||"—")}</td><td>${money(x.amount)}</td><td>${esc(x.block_number||"—")}</td><td>${esc(x.reason||"No automatic match")}</td><td><button class="btn small green" onclick="resolveUnmatched('${esc(x.id)}')">Mark Resolved</button></td></tr>`).join("")}</tbody></table>`;
+  $("unmatchedTable").innerHTML=`<table><thead><tr><th>Date</th><th>TX Hash</th><th>From</th><th>Amount</th><th>Block</th><th>Reason</th><th>Action</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${date(x.created_at)}</td><td class="mono">${esc(x.tx_hash||x.txHash||"—")}</td><td class="mono">${esc(x.from_address||x.from||"—")}</td><td>${money(x.amount)}</td><td>${esc(x.block_number||"—")}</td><td>${esc(x.reason||"No automatic match")}</td><td><button class="btn small green" onclick="openUnmatchedCredit('${esc(x.id)}')">Verify & Credit</button></td></tr>`).join("")}</tbody></table>`;
+}
+function openUnmatchedCredit(id){
+  const d=state.unmatched.find(x=>String(x.id)===String(id));
+  if(!d)return;
+  const users=state.users.filter(u=>!u.banned);
+  if(!users.length){toast("No active users available");return}
+  $("modalTitle").textContent="Verify & Credit Unmatched Deposit";
+  $("modalBody").innerHTML=`<div class="detail-grid"><div class="detail-item"><span>Amount</span><b>${money(d.amount)}</b></div><div class="detail-item"><span>TX Hash</span><b class="mono">${esc(d.tx_hash||"—")}</b></div><div class="detail-item"><span>From</span><b class="mono">${esc(d.from_address||"—")}</b></div><div class="detail-item"><span>Block</span><b>${esc(d.block_number||"—")}</b></div></div><div style="margin-top:14px"><label class="field-label">Credit this exact on-chain amount to user</label><select id="unmatchedCreditUser">${users.map(u=>`<option value="${esc(u.telegram_id)}">${esc([u.first_name,u.last_name].filter(Boolean).join(" ")||u.username||u.telegram_id)} — ${esc(u.telegram_id)} — Balance: ${money(u.balance)}</option>`).join("")}</select><div class="alert">The backend will re-verify the TX on BSC, confirm the USDT transfer and credit only the exact verified amount. The amount cannot be edited here.</div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn green" onclick="creditUnmatched('${esc(d.id)}')">Verify & Credit ${money(d.amount)}</button></div></div>`;
+  $("modal").classList.add("show");
+}
+async function creditUnmatched(id){
+  const user=$("unmatchedCreditUser")?.value;
+  if(!user){toast("Select a user first");return}
+  if(!confirm("Verify this blockchain deposit and credit the exact on-chain amount to the selected user's Mini App balance?"))return;
+  try{
+    const d=await api("/api/admin/deposits/unmatched/"+encodeURIComponent(id)+"/credit",{method:"POST",body:JSON.stringify({telegram_id:user})});
+    closeModal();toast(`Verified & credited ${Number(d.amount||0).toFixed(6)} USDT`);await loadUnmatched();await refreshAll();
+  }catch(e){toast(e.message)}
 }
 async function resolveUnmatched(id){
-  if(!confirm("Mark this unmatched deposit as resolved?"))return;
+  if(!confirm("Mark this unmatched deposit as resolved without crediting a user?"))return;
   try{await api("/api/admin/deposits/unmatched/"+encodeURIComponent(id)+"/resolve",{method:"POST"});toast("Marked resolved");await loadUnmatched()}catch(e){toast(e.message)}
 }
 
